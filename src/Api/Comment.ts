@@ -1,10 +1,3 @@
-// import { Post } from '../types/Post';
-// import { client } from '../utils/fetchClient';
-
-// export const getPost = (userId: number) => {
-//   return client.get<Post[]>(`/posts?userId=${userId}`);
-// };
-
 import { Comment } from '../types/Comment';
 import { client } from '../utils/fetchClient';
 
@@ -12,7 +5,7 @@ export const getComments = (id: number) => {
   return client.get<Comment[]>(`/comments?postId=${id}`);
 };
 
-export const creatComments = ({
+export const createComments = ({
   name,
   email,
   body,

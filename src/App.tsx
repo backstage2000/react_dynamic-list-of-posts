@@ -9,71 +9,70 @@ import { PostDetails } from './components/PostDetails';
 import { UserSelector } from './components/UserSelector';
 import { Loader } from './components/Loader';
 import { getUsers } from './Api/Users';
-import { getPost } from './Api/Posts';
+import { getPosts } from './Api/Posts';
 import { useEffect, useState } from 'react';
 import { User } from './types/User';
 import { Post } from './types/Post';
-import { creatComments, deleteComment, getComments } from './Api/Comment';
+import { createComments, deleteComment, getComments } from './Api/Comment';
 import { Comment } from './types/Comment';
 
 export const App = () => {
   const [users, setUsers] = useState<User[]>([]);
 
-  const [loading, setLoading] = useState(false);
-  const [loadingComments, setLoadingComments] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
 
   const [posts, setPosts] = useState<Post[]>([]);
-  const [selectedPosts, setSelectedPosts] = useState<Post>();
+  const [selectedPost, setSelectedPost] = useState<Post>();
 
   const [error, setError] = useState(false);
   const [errorComments, setErrorComments] = useState(false);
 
-  const [selectedUser, setSelectedUser] = useState(false);
+  const [isUserSelected, setIsUserSelected] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
-  const [openSidebar, setOpenSidebar] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [comments, setComments] = useState<Comment[]>([]);
 
-  async function fetchCreatComment({
+  async function fetchCreateComment({
     name,
     email,
     body,
     postId,
   }: Omit<Comment, 'id'>) {
     try {
-      const result = await creatComments({ name, email, body, postId });
+      const result = await createComments({ name, email, body, postId });
 
       setComments(currentComments => [...currentComments, result]);
     } catch {}
   }
 
   async function fetchPosts(userId: number) {
-    setLoading(true);
+    setSelectedUserId(userId);
+    setIsLoading(true);
     setError(false);
 
     if (userId !== selectedUserId) {
-      setOpenSidebar('Close');
+      setIsSidebarOpen(false);
     }
 
-    if (userId) {
-      setSelectedUser(true);
-    }
+    setIsUserSelected(!!userId);
 
     try {
-      const results = await getPost(userId);
+      const results = await getPosts(userId);
 
       setPosts(results);
     } catch {
       setError(true);
-      setLoading(false);
+      setIsLoading(false);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
   async function fetchComments(postId: number) {
-    setLoadingComments(true);
+    setIsLoadingComments(true);
     setErrorComments(false);
 
     try {
@@ -81,10 +80,10 @@ export const App = () => {
 
       setComments(results);
     } catch {
-      setLoadingComments(false);
+      setIsLoadingComments(false);
       setErrorComments(true);
     } finally {
-      setLoadingComments(false);
+      setIsLoadingComments(false);
     }
   }
 
@@ -112,17 +111,17 @@ export const App = () => {
 
   let content;
 
-  if (!selectedUser) {
+  if (!isUserSelected) {
     content = <p data-cy="NoSelectedUser">No user selected</p>;
-  } else if (loading) {
+  } else if (isLoading) {
     content = <Loader />;
   } else if (posts.length > 0) {
     content = (
       <PostsList
         posts={posts}
-        setOpenSidebar={setOpenSidebar}
+        setIsSidebarOpen={setIsSidebarOpen}
         onSelectedComment={fetchComments}
-        onSelectedPosts={setSelectedPosts}
+        onSelectedPosts={setSelectedPost}
       />
     );
   } else if (error) {
@@ -149,7 +148,7 @@ export const App = () => {
                 <UserSelector
                   users={users}
                   onSelect={fetchPosts}
-                  selectedId={setSelectedUserId}
+                  selectedId={selectedUserId}
                 />
               </div>
 
@@ -166,19 +165,19 @@ export const App = () => {
               'is-8-desktop',
               'Sidebar',
               {
-                'Sidebar--open': openSidebar === 'Open',
+                'Sidebar--open': isSidebarOpen,
               },
             )}
           >
             <div className="tile is-child box is-success ">
-              {openSidebar === 'Open' && (
+              {isSidebarOpen && (
                 <PostDetails
                   onDelete={fetchDeleteComment}
-                  onSubmit={fetchCreatComment}
+                  onSubmit={fetchCreateComment}
                   comments={comments}
-                  selectedPost={selectedPosts}
-                  isLoading={loadingComments}
-                  erorrComments={errorComments}
+                  selectedPost={selectedPost}
+                  isLoading={isLoadingComments}
+                  errorComments={errorComments}
                 />
               )}
             </div>

@@ -5,7 +5,7 @@ import cn from 'classnames';
 type Props = {
   users: User[];
   onSelect: (userId: number) => Promise<void>;
-  selectedId: (value: number) => void;
+  selectedId: number | null;
 };
 
 export const UserSelector: React.FC<Props> = ({
@@ -14,7 +14,7 @@ export const UserSelector: React.FC<Props> = ({
   selectedId,
 }) => {
   const [isActive, setIsActive] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
   const [selectedUserName, setSelectedUserName] = useState('');
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -46,9 +46,7 @@ export const UserSelector: React.FC<Props> = ({
   const toggleDropdown = () => setIsActive(prev => !prev);
 
   const handleClick = (id: number, nameUser: string) => {
-    setSelectedUserId(id);
     onSelect(id);
-    selectedId(id);
     setSelectedUserName(nameUser);
   };
 
@@ -83,12 +81,14 @@ export const UserSelector: React.FC<Props> = ({
               <a
                 key={user.id}
                 href={`#user-${user.id}`}
-                onClick={() => {
+                onClick={e => {
+                  e.preventDefault();
+
                   handleClick(user.id, user.name);
                   toggleDropdown();
                 }}
                 className={cn('dropdown-item', {
-                  'is-active': selectedUserId === user.id,
+                  'is-active': selectedId === user.id,
                 })}
               >
                 {user.name}

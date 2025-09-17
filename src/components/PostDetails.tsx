@@ -10,14 +10,14 @@ type Props = {
   onDelete: (value: number) => void;
   selectedPost?: Post;
   isLoading: boolean;
-  erorrComments: boolean;
+  errorComments: boolean;
 };
 
 export const PostDetails: React.FC<Props> = ({
   comments,
   selectedPost,
   isLoading,
-  erorrComments,
+  errorComments,
   onSubmit,
   onDelete,
 }) => {
@@ -29,7 +29,7 @@ export const PostDetails: React.FC<Props> = ({
 
   let content;
 
-  if (erorrComments) {
+  if (errorComments) {
     content = (
       <div className="notification is-danger" data-cy="CommentsError">
         Something went wrong
@@ -42,9 +42,13 @@ export const PostDetails: React.FC<Props> = ({
       <>
         <p className="title is-4">Comments:</p>
 
-        {comments.map((comment, index) => {
+        {comments.map(comment => {
           return (
-            <article key={index} className="message is-small" data-cy="Comment">
+            <article
+              key={comment.id}
+              className="message is-small"
+              data-cy="Comment"
+            >
               <div className="message-header">
                 <a href={`mailto:${comment.email}`} data-cy="CommentAuthor">
                   {comment.name}

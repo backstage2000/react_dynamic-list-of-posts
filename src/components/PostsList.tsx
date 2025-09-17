@@ -4,22 +4,32 @@ import { Post } from '../types/Post';
 
 type Props = {
   posts: Post[];
-  setOpenSidebar: (value: string) => void;
+  setIsSidebarOpen: (value: boolean) => void;
   onSelectedComment: (value: number) => void;
   onSelectedPosts: (value: Post) => void;
 };
 
 export const PostsList: React.FC<Props> = ({
   posts,
-  setOpenSidebar,
+  setIsSidebarOpen,
   onSelectedComment,
   onSelectedPosts,
 }) => {
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
-  function reset() {
-    setSelectedPostId(null);
-  }
+  const handleClick = (post: Post) => {
+    const isOpen = selectedPostId === post.id;
+
+    if (isOpen) {
+      setIsSidebarOpen(false);
+      setSelectedPostId(null);
+    } else {
+      setIsSidebarOpen(true);
+      setSelectedPostId(post.id);
+      onSelectedComment(post.id);
+      onSelectedPosts(post);
+    }
+  };
 
   return (
     <div data-cy="PostsList">
@@ -36,38 +46,30 @@ export const PostsList: React.FC<Props> = ({
         </thead>
 
         <tbody>
-          {posts.map(post => (
-            <tr data-cy="Post" key={post.id}>
-              <td data-cy="PostId">{post.id}</td>
+          {posts.map(post => {
+            const isOpen = selectedPostId === post.id;
 
-              <td data-cy="PostTitle">{post.title}</td>
+            return (
+              <tr data-cy="Post" key={post.id}>
+                <td data-cy="PostId">{post.id}</td>
 
-              <td className="has-text-right is-vcentered">
-                <button
-                  type="button"
-                  data-cy="PostButton"
-                  className={classNames('button is-link', {
-                    'is-light': selectedPostId !== post.id,
-                  })}
-                  onClick={e => {
-                    const text = e.currentTarget.innerText;
+                <td data-cy="PostTitle">{post.title}</td>
 
-                    setSelectedPostId(post.id);
-                    onSelectedComment(post.id);
-                    onSelectedPosts(post);
-
-                    setOpenSidebar(text);
-
-                    if (text === 'Close') {
-                      reset();
-                    }
-                  }}
-                >
-                  {selectedPostId !== post.id ? 'Open' : 'Close'}
-                </button>
-              </td>
-            </tr>
-          ))}
+                <td className="has-text-right is-vcentered">
+                  <button
+                    type="button"
+                    data-cy="PostButton"
+                    className={classNames('button is-link', {
+                      'is-light': selectedPostId !== post.id,
+                    })}
+                    onClick={() => handleClick(post)}
+                  >
+                    {isOpen ? 'Close' : 'Open'}
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

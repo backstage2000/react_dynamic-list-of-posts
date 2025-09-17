@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { useState } from 'react';
 import { Comment } from '../types/Comment';
 import { Post } from '../types/Post';
+import PropTypes from 'prop-types';
 
 type Props = {
   onSubmit: (comment: Omit<Comment, 'id'>) => Promise<void>;
@@ -27,7 +28,7 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
     body: '',
   });
 
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleChange<K extends keyof FormState>(key: K, value: string) {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -37,7 +38,7 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
   function clearForm() {
     setForm({ name: '', email: '', body: '' });
     setErrors({ name: '', email: '', body: '' });
-    setLoading(false);
+    setIsLoading(false);
   }
 
   function resetBody() {
@@ -53,9 +54,9 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
     }
 
     const newErrors: FormState = {
-      name: form.name ? '' : 'Name is required',
-      email: form.email ? '' : 'Email is required',
-      body: form.body ? '' : 'Comment is required',
+      name: form.name.trim() ? '' : 'Name is required',
+      email: form.email.trim() ? '' : 'Email is required',
+      body: form.body.trim() ? '' : 'Comment is required',
     };
 
     setErrors(newErrors);
@@ -65,12 +66,12 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
     }
 
     try {
-      setLoading(true);
+      setIsLoading(true);
       await onSubmit({ ...form, postId: selectedPost.id });
       resetBody();
     } catch {
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -184,9 +185,9 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
           <button
             type="submit"
             className={classNames('button is-link', {
-              'is-loading': loading,
+              'is-loading': isLoading,
             })}
-            disabled={loading}
+            disabled={isLoading}
           >
             Add
           </button>
@@ -205,4 +206,14 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
       </div>
     </form>
   );
+};
+
+NewCommentForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  selectedPost: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    userId: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    body: PropTypes.string.isRequired,
+  }),
 };
