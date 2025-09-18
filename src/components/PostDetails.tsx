@@ -71,8 +71,6 @@ export const PostDetails: React.FC<Props> = ({
           );
         })}
 
-        {/* Реализация кнопки при переключении  */}
-
         {!isWriting ? (
           <button
             data-cy="WriteCommentButton"

@@ -40,4 +40,4 @@ Install Prettier Extention and use this [VSCode settings](https://mate-academy.g
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `https://github.com/backstage2000` with your Github username in the [DEMO LINK](https://backstage2000.github.io/react_todo-app-with-api/) and add it to the PR description.
+- Replace `https://github.com/backstage2000` with your Github username in the [DEMO LINK](https://github.com/backstage2000/react_dynamic-list-of-posts) and add it to the PR description.

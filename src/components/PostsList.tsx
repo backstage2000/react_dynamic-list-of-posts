@@ -6,14 +6,14 @@ type Props = {
   posts: Post[];
   setIsSidebarOpen: (value: boolean) => void;
   onSelectedComment: (value: number) => void;
-  onSelectedPosts: (value: Post) => void;
+  onSelectedPost: (value: Post) => void;
 };
 
 export const PostsList: React.FC<Props> = ({
   posts,
   setIsSidebarOpen,
   onSelectedComment,
-  onSelectedPosts,
+  onSelectedPost,
 }) => {
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
@@ -27,7 +27,7 @@ export const PostsList: React.FC<Props> = ({
       setIsSidebarOpen(true);
       setSelectedPostId(post.id);
       onSelectedComment(post.id);
-      onSelectedPosts(post);
+      onSelectedPost(post);
     }
   };
 
@@ -76,4 +76,4 @@ export const PostsList: React.FC<Props> = ({
   );
 };
 
-PostsList.displayName = 'PostList';
+PostsList.displayName = 'PostsList';

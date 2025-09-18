@@ -13,7 +13,7 @@ import { getPosts } from './Api/Posts';
 import { useEffect, useState } from 'react';
 import { User } from './types/User';
 import { Post } from './types/Post';
-import { createComments, deleteComment, getComments } from './Api/Comment';
+import { createComments, deleteComments, getComments } from './Api/Comment';
 import { Comment } from './types/Comment';
 
 export const App = () => {
@@ -45,19 +45,20 @@ export const App = () => {
       const result = await createComments({ name, email, body, postId });
 
       setComments(currentComments => [...currentComments, result]);
-    } catch {}
+    } catch (errorCreatComments) {
+      throw errorCreatComments;
+    }
   }
 
   async function fetchPosts(userId: number) {
-    setSelectedUserId(userId);
     setIsLoading(true);
     setError(false);
+    setIsUserSelected(!!userId);
 
     if (userId !== selectedUserId) {
       setIsSidebarOpen(false);
+      setSelectedUserId(userId);
     }
-
-    setIsUserSelected(!!userId);
 
     try {
       const results = await getPosts(userId);
@@ -65,7 +66,6 @@ export const App = () => {
       setPosts(results);
     } catch {
       setError(true);
-      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +80,6 @@ export const App = () => {
 
       setComments(results);
     } catch {
-      setIsLoadingComments(false);
       setErrorComments(true);
     } finally {
       setIsLoadingComments(false);
@@ -88,13 +87,15 @@ export const App = () => {
   }
 
   async function fetchDeleteComment(id: number) {
-    setComments(currentComment =>
-      currentComment.filter(comment => comment.id !== id),
+    setComments(currentComments =>
+      currentComments.filter(comment => comment.id !== id),
     );
 
     try {
-      await deleteComment(id);
-    } catch {}
+      await deleteComments(id);
+    } catch (errDelete) {
+      throw errDelete;
+    }
   }
 
   useEffect(() => {
@@ -103,7 +104,9 @@ export const App = () => {
         const loadingUsers = await getUsers();
 
         setUsers(loadingUsers);
-      } catch {}
+      } catch (errUsers) {
+        throw errUsers;
+      }
     };
 
     fetchUsers();
@@ -121,7 +124,7 @@ export const App = () => {
         posts={posts}
         setIsSidebarOpen={setIsSidebarOpen}
         onSelectedComment={fetchComments}
-        onSelectedPosts={setSelectedPost}
+        onSelectedPost={setSelectedPost}
       />
     );
   } else if (error) {

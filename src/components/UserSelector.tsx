@@ -15,8 +15,6 @@ export const UserSelector: React.FC<Props> = ({
 }) => {
   const [isActive, setIsActive] = useState(false);
 
-  const [selectedUserName, setSelectedUserName] = useState('');
-
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -45,10 +43,15 @@ export const UserSelector: React.FC<Props> = ({
 
   const toggleDropdown = () => setIsActive(prev => !prev);
 
-  const handleClick = (id: number, nameUser: string) => {
-    onSelect(id);
-    setSelectedUserName(nameUser);
+  const handleClick = async (id: number) => {
+    try {
+      onSelect(id);
+    } catch (error) {
+      throw error;
+    }
   };
+
+  const selectedUser = users.find(u => u.id === selectedId);
 
   return (
     <div
@@ -66,7 +69,7 @@ export const UserSelector: React.FC<Props> = ({
           aria-haspopup="true"
           aria-controls="dropdown-menu"
         >
-          <span>{selectedUserName ? selectedUserName : 'Choose a user'}</span>
+          <span>{selectedUser ? selectedUser.name : 'Choose a user'}</span>
 
           <span className="icon is-small">
             <i className="fas fa-angle-down" aria-hidden="true" />
@@ -84,7 +87,7 @@ export const UserSelector: React.FC<Props> = ({
                 onClick={e => {
                   e.preventDefault();
 
-                  handleClick(user.id, user.name);
+                  handleClick(user.id);
                   toggleDropdown();
                 }}
                 className={cn('dropdown-item', {

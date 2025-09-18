@@ -38,7 +38,6 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
   function clearForm() {
     setForm({ name: '', email: '', body: '' });
     setErrors({ name: '', email: '', body: '' });
-    setIsLoading(false);
   }
 
   function resetBody() {
@@ -67,9 +66,18 @@ export const NewCommentForm: React.FC<Props> = ({ onSubmit, selectedPost }) => {
 
     try {
       setIsLoading(true);
-      await onSubmit({ ...form, postId: selectedPost.id });
+
+      const payload = {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        body: form.body.trim(),
+        postId: selectedPost.id,
+      };
+
+      await onSubmit(payload);
       resetBody();
-    } catch {
+    } catch (error) {
+      throw error;
     } finally {
       setIsLoading(false);
     }
